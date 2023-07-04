@@ -1,0 +1,7 @@
+<resources>
+    <style name="Theme.SoyMilk" parent="Theme.MaterialComponents.Light.NoActionBar">
+        <item name="android:textColor">@color/black</item>
+    </style>
+
+    <color name="vectorAssetTint">@color/black</color>
+</resources>
