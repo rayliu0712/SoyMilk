@@ -92,10 +92,9 @@ public class SettingFragment extends Fragment {
                 textView.setText(currentItem);
 
                 textView.setOnClickListener(v -> {
-                    shouldIgnoreFocusChanged = true;
-
                     switch (position) {
                         case 0:
+                            shouldIgnoreFocusChanged = true;
                             new AlertDialog.Builder(ma)
                                     .setTitle("Background Setting")
                                     .setMessage("Remove OR Update ?")
@@ -111,6 +110,7 @@ public class SettingFragment extends Fragment {
                                     .create().show();
                             break;
                         case 1:
+                            shouldIgnoreFocusChanged = true;
                             new AlertDialog.Builder(ma)
                                     .setTitle("Mask Setting")
                                     .setMessage("Remove OR Update ?")
@@ -125,9 +125,11 @@ public class SettingFragment extends Fragment {
                                     .create().show();
                             break;
                         case 2:
+                            shouldIgnoreFocusChanged = true;
                             startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/marcelbohland/Android-Webview-Adblock")));
                             break;
                         case 3:
+                            shouldIgnoreFocusChanged = true;
                             startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/KitKat-0712/SoyMilk")));
                             break;
                     }
