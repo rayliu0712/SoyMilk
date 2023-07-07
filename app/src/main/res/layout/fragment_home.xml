@@ -45,6 +45,7 @@
                 android:layout_weight="1" />
 
             <TextView
+                android:id="@+id/dnd"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/opensans_light"
@@ -73,10 +74,24 @@
         </LinearLayout>
 
         <androidx.coordinatorlayout.widget.CoordinatorLayout
+            android:id="@+id/view"
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
+            <TextView
+                android:id="@+id/setting"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom|start"
+                android:fontFamily="@font/opensans_light"
+                android:layout_marginStart="-20dp"
+                android:layout_marginBottom="50dp"
+                android:rotation="-90"
+                android:text="@string/setting"
+                android:textSize="25sp" />
+
             <com.google.android.material.floatingactionbutton.FloatingActionButton
+                android:id="@+id/surfweb"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="bottom|end"

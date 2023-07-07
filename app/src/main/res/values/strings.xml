@@ -3,4 +3,12 @@
     <string name="image">Image</string>
     <string name="dnd">DND</string>
     <string name="bookmark">Bookmark</string>
+    <string name="close">Close</string>
+    <string name="previous">Previous</string>
+    <string name="refresh">Refresh</string>
+    <string name="setting_fragment">Setting</string>
+    <string name="setting">[ Setting ]</string>
+
+    <string name="background_ok">[ OK ] [ 設定主頁面背景圖片 ]</string>
+    <string name="mask_ok">[ OK ] [ 設定遮罩圖片 ]</string>
 </resources>
