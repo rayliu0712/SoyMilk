@@ -23,7 +23,6 @@
             android:id="@+id/number"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="20dp"
             android:layout_marginBottom="5dp"
             android:background="@null"
             android:fontFamily="@font/robotomono_thin"
@@ -31,6 +30,7 @@
             android:hint="@string/app_name"
             android:importantForAutofill="no"
             android:inputType="numberDecimal"
+            android:padding="35dp"
             android:textSize="50sp" />
 
         <LinearLayout
@@ -48,9 +48,8 @@
                 android:id="@+id/dnd"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:fontFamily="@font/opensans_light"
                 android:text="@string/dnd"
-                android:textSize="28sp"
+                android:textSize="26sp"
                 app:drawableLeftCompat="@drawable/dnd" />
 
             <View
@@ -61,9 +60,8 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:fontFamily="@font/opensans_light"
                 android:text="@string/bookmark"
-                android:textSize="28sp"
+                android:textSize="26sp"
                 app:drawableLeftCompat="@drawable/bookmark" />
 
             <View
@@ -78,12 +76,25 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
+            <EditText
+                android:id="@+id/url"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
+            <ListView
+                android:id="@+id/listview"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="top|center"
+                android:divider="@null"
+                android:dividerHeight="15dp"
+                android:padding="60dp" />
+
             <TextView
                 android:id="@+id/setting"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="bottom|start"
-                android:fontFamily="@font/opensans_light"
                 android:layout_marginStart="-20dp"
                 android:layout_marginBottom="50dp"
                 android:rotation="-90"
@@ -91,12 +102,13 @@
                 android:textSize="25sp" />
 
             <com.google.android.material.floatingactionbutton.FloatingActionButton
+
                 android:id="@+id/surfweb"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="bottom|end"
                 android:layout_margin="20dp"
-                android:contentDescription="@null"
+                android:contentDescription="@string/app_name"
                 android:src="@drawable/hands" />
 
         </androidx.coordinatorlayout.widget.CoordinatorLayout>
