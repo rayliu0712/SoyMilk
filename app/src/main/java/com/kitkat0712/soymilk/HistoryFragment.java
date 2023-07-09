@@ -37,7 +37,7 @@ public class HistoryFragment extends Fragment {
                             listItemView = LayoutInflater.from(ma).inflate(R.layout.list_history_item, parent, false);
                         }
 
-                        HistoryConfig currentItem = historyConfig[position];
+                        HistoryConfig currentItem = historyConfig.get(position);
 
                         ((TextView) listItemView.findViewById(R.id.date)).setText(currentItem.date);
                         ((TextView) listItemView.findViewById(R.id.url)).setText(currentItem.url);
