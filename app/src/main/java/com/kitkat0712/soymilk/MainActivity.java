@@ -41,7 +41,7 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 	// test
-	private final Fragment testFragment = new HomeFragment();
+	private final Fragment testFragment = new HistoryFragment();
 	public static final String tag = "tag";
 
 	public static final int VERSION_DND = M;
@@ -56,11 +56,14 @@ public class MainActivity extends AppCompatActivity {
 	public static int viewOriginalColor;
 
 	public static SwitchConfig switchConfig;
-	public static File switchConfigFile;
-	public static List<String> switchConfigStringList = new ArrayList<>();
 	public static List<SauceConfig> sauceConfig;
-	public static File sauceConfigFile;
-	public static List<String> sauceConfigStringList = new ArrayList<>();
+	public static HistoryConfig[] historyConfig;
+	public static File switchFile;
+	public static File sauceFile;
+	public static File historyFile;
+	public static List<String> switchList = new ArrayList<>();
+	public static List<String> sauceList = new ArrayList<>();
+	public static List<String> historyList = new ArrayList<>();
 
 	public static File backgroundFile;
 	public static File maskFile;
@@ -104,10 +107,10 @@ public class MainActivity extends AppCompatActivity {
 
 	public static void newSwitchConfigFile() {
 		try {
-			if (!switchConfigFile.delete()) switchConfigFile.createNewFile();
+			if (!switchFile.delete()) switchFile.createNewFile();
 
 			InputStream is = ma.getResources().openRawResource(R.raw.switch_config);
-			BufferedWriter bw = new BufferedWriter(new FileWriter(switchConfigFile));
+			BufferedWriter bw = new BufferedWriter(new FileWriter(switchFile));
 			BufferedReader br = new BufferedReader(new InputStreamReader(is));
 			StringBuilder sb = new StringBuilder();
 			String line;
@@ -116,7 +119,7 @@ public class MainActivity extends AppCompatActivity {
 				sb.append(line);
 				bw.write(line);
 				bw.newLine();
-				switchConfigStringList.add(line);
+				switchList.add(line);
 			}
 			bw.close();
 			br.close();
@@ -126,10 +129,10 @@ public class MainActivity extends AppCompatActivity {
 	}
 	public static void newSauceConfigFile() {
 		try {
-			if (!sauceConfigFile.delete()) sauceConfigFile.createNewFile();
+			if (!sauceFile.delete()) sauceFile.createNewFile();
 
 			InputStream is = ma.getResources().openRawResource(R.raw.sauce_config);
-			BufferedWriter bw = new BufferedWriter(new FileWriter(sauceConfigFile));
+			BufferedWriter bw = new BufferedWriter(new FileWriter(sauceFile));
 			BufferedReader br = new BufferedReader(new InputStreamReader(is));
 			StringBuilder sb = new StringBuilder();
 			String line;
@@ -138,7 +141,29 @@ public class MainActivity extends AppCompatActivity {
 				sb.append(line);
 				bw.write(line);
 				bw.newLine();
-				sauceConfigStringList.add(line);
+				sauceList.add(line);
+			}
+			bw.close();
+			br.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	public static void newHistoryConfigFile() {
+		try {
+			if (!historyFile.delete()) historyFile.createNewFile();
+
+			InputStream is = ma.getResources().openRawResource(R.raw.history_config);
+			BufferedWriter bw = new BufferedWriter(new FileWriter(historyFile));
+			BufferedReader br = new BufferedReader(new InputStreamReader(is));
+			StringBuilder sb = new StringBuilder();
+			String line;
+
+			while ((line = br.readLine()) != null) {
+				sb.append(line);
+				bw.write(line);
+				bw.newLine();
+				historyList.add(line);
 			}
 			bw.close();
 			br.close();
@@ -162,8 +187,20 @@ public class MainActivity extends AppCompatActivity {
 		ma = this;
 	}
 
+
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
+		// grant dnd access
+		{
+			if (SDK_INT >= VERSION_DND) {
+				if (!((NotificationManager) getSystemService(NOTIFICATION_SERVICE)).isNotificationPolicyAccessGranted()) {
+					Intent intent = new Intent(Settings.ACTION_NOTIFICATION_POLICY_ACCESS_SETTINGS);
+					startActivity(intent);
+				}
+			}
+		}
+
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 
@@ -175,17 +212,17 @@ public class MainActivity extends AppCompatActivity {
 
 		// load switch_config.json
 		{
-			switchConfigFile = new File(getFilesDir(), "switch_config.json");
+			switchFile = new File(getFilesDir(), "switch_config.json");
 
 			try {
-				if (switchConfigFile.exists()) {
-					BufferedReader br = new BufferedReader(new FileReader(switchConfigFile));
+				if (switchFile.exists()) {
+					BufferedReader br = new BufferedReader(new FileReader(switchFile));
 					StringBuilder sb = new StringBuilder();
 					String line;
 
 					while ((line = br.readLine()) != null) {
 						sb.append(line);
-						switchConfigStringList.add(line);
+						switchList.add(line);
 					}
 					br.close();
 				} else {
@@ -194,22 +231,22 @@ public class MainActivity extends AppCompatActivity {
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
-			switchConfig = new Gson().fromJson(String.join("\n", switchConfigStringList), SwitchConfig.class);
+			switchConfig = new Gson().fromJson(String.join("\n", switchList), SwitchConfig.class);
 		}
 
 		// load sauce_config.json
 		{
-			sauceConfigFile = new File(getFilesDir(), "sauce_config.json");
+			sauceFile = new File(getFilesDir(), "sauce_config.json");
 
 			try {
-				if (sauceConfigFile.exists()) {
-					BufferedReader br = new BufferedReader(new FileReader(sauceConfigFile));
+				if (sauceFile.exists()) {
+					BufferedReader br = new BufferedReader(new FileReader(sauceFile));
 					StringBuilder sb = new StringBuilder();
 					String line;
 
 					while ((line = br.readLine()) != null) {
 						sb.append(line);
-						sauceConfigStringList.add(line);
+						sauceList.add(line);
 					}
 					br.close();
 				} else {
@@ -218,7 +255,31 @@ public class MainActivity extends AppCompatActivity {
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
-			sauceConfig = new Gson().fromJson(String.join("\n", sauceConfigStringList), new TypeToken<List<SauceConfig>>(){}.getType());
+			sauceConfig = new Gson().fromJson(String.join("\n", sauceList), new TypeToken<List<SauceConfig>>(){}.getType());
+		}
+
+		// load history_config.json
+		{
+			historyFile = new File(getFilesDir(), "history_config.json");
+
+			try {
+				if (historyFile.exists()) {
+					BufferedReader br = new BufferedReader(new FileReader(historyFile));
+					StringBuilder sb = new StringBuilder();
+					String line;
+
+					while ((line = br.readLine()) != null) {
+						sb.append(line);
+						historyList.add(line);
+					}
+					br.close();
+				} else {
+					newHistoryConfigFile();
+				}
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			historyConfig = new Gson().fromJson(String.join("\n", historyList), HistoryConfig[].class);
 		}
 
 		// load image
@@ -236,16 +297,6 @@ public class MainActivity extends AppCompatActivity {
 		// set fragment
 		{
 			fm.beginTransaction().add(R.id.fragment_container, testFragment).commit();
-		}
-
-		// grant dnd access
-		{
-			if (SDK_INT >= VERSION_DND) {
-				if (!((NotificationManager) getSystemService(NOTIFICATION_SERVICE)).isNotificationPolicyAccessGranted()) {
-					Intent intent = new Intent(Settings.ACTION_NOTIFICATION_POLICY_ACCESS_SETTINGS);
-					startActivity(intent);
-				}
-			}
 		}
 	}
 

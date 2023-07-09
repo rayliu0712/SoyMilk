@@ -11,4 +11,6 @@
 
     <string name="background_ok">[ OK ] [ 設定主頁面背景圖片 ]</string>
     <string name="mask_ok">[ OK ] [ 設定遮罩圖片 ]</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

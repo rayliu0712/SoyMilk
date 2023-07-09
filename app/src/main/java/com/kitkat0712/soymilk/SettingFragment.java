@@ -5,9 +5,9 @@ import static com.kitkat0712.soymilk.SwitchConfig.length;
 import static com.kitkat0712.soymilk.MainActivity.backgroundFile;
 import static com.kitkat0712.soymilk.MainActivity.backgroundURI;
 import static com.kitkat0712.soymilk.MainActivity.switchConfig;
-import static com.kitkat0712.soymilk.MainActivity.switchConfigFile;
+import static com.kitkat0712.soymilk.MainActivity.switchFile;
 import static com.kitkat0712.soymilk.MainActivity.getJPG;
-import static com.kitkat0712.soymilk.MainActivity.switchConfigStringList;
+import static com.kitkat0712.soymilk.MainActivity.switchList;
 import static com.kitkat0712.soymilk.MainActivity.ma;
 import static com.kitkat0712.soymilk.MainActivity.maskFile;
 import static com.kitkat0712.soymilk.MainActivity.maskIV;
@@ -148,14 +148,14 @@ public class SettingFragment extends Fragment {
 			switchConfig.update(buffArray);
 
 			try {
-				BufferedWriter bw = new BufferedWriter(new FileWriter(switchConfigFile));
-				String head = switchConfigStringList.get(0);
-				String tail = switchConfigStringList.get(switchConfigStringList.size() - 1);
+				BufferedWriter bw = new BufferedWriter(new FileWriter(switchFile));
+				String head = switchList.get(0);
+				String tail = switchList.get(switchList.size() - 1);
 
 				bw.write(head);
 				bw.newLine();
 				for (int i = 0; i < length; ++i) {
-					String line = switchConfigStringList.get(i + 1);
+					String line = switchList.get(i + 1);
 
 					if (line.contains("true"))
 						line = line.replace("true", valueOf(buffArray[i]));
@@ -165,6 +165,7 @@ public class SettingFragment extends Fragment {
 					bw.write(line);
 					bw.newLine();
 				}
+
 				bw.write(tail);
 				bw.newLine();
 				bw.close();

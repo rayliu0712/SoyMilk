@@ -1,14 +1,10 @@
 [
-	{
-		"name": "Pixiv",
-		"url": "pixiv.net/artworks/#"
-	},
-	{
-		"name": "nhentai",
-		"url": "nhentai.net/g/#"
-	},
-	{
-		"name": "hanime",
-		"url": "hanime1.me/watch?v=#"
-	}
+    {
+        "name": "Google",
+        "url": "google.com/search?q="
+    },
+    {
+        "name": "YouTube",
+        "url": "youtube.com/results?search_query="
+    }
 ]
