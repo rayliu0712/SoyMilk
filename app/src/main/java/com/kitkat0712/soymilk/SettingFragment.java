@@ -48,9 +48,9 @@ public class SettingFragment extends Fragment {
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-		buffArray = switchConfig.toArray();
-
 		View view = inflater.inflate(R.layout.fragment_setting, container, false);
+
+		buffArray = switchConfig.toArray();
 
 		ListView switchLV = view.findViewById(R.id.switch_listview);
 		ArrayAdapter<String> switchAP = new ArrayAdapter<String>(ma, R.layout.list_switch_item, switchItems) {
@@ -61,8 +61,8 @@ public class SettingFragment extends Fragment {
 				if (listItemView == null) {
 					listItemView = LayoutInflater.from(ma).inflate(R.layout.list_switch_item, parent, false);
 				}
-
 				String currentItem = switchItems[position];
+
 				TextView textView = listItemView.findViewById(R.id.textview);
 				Switch theSwitch = listItemView.findViewById(R.id.the_switch);
 				theSwitch.setChecked(buffArray[position]);

@@ -45,37 +45,23 @@ public class WebFragment extends Fragment {
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		View view = inflater.inflate(R.layout.fragment_web, container, false);
-
-		view.findViewById(R.id.close).setOnClickListener(v -> replaceFragment(new HomeFragment()));
-		view.findViewById(R.id.previous).setOnClickListener(v -> {
-			if (wv.canGoBack()) {
-				wv.goBack();
-			}
-		});
-		view.findViewById(R.id.refresh).setOnClickListener(v -> {
-			v.setRotation(v.getRotation() + 90);
-			wv.reload();
-		});
 		dndIV = view.findViewById(R.id.dnd);
+		wv = view.findViewById(R.id.web);
+
 		dndIV.setOnClickListener(v -> {
 			if (dndOnClick()) {
 				setDNDVisual();
 			}
 		});
-
-		wv = view.findViewById(R.id.web);
 		WebSettings webSettings = wv.getSettings();
-
 		webSettings.setJavaScriptEnabled(true);
 		webSettings.setCacheMode(WebSettings.LOAD_DEFAULT);
 		webSettings.setDomStorageEnabled(true);
-
 		webSettings.setSupportZoom(true);
 		webSettings.setBuiltInZoomControls(true);
 		webSettings.setDisplayZoomControls(false);
 		webSettings.setLoadWithOverviewMode(true);
 		webSettings.setUseWideViewPort(true);
-
 		if (switchConfig.enableAdBlock) {
 			// load simplehttpserver.txt
 			{
@@ -112,8 +98,18 @@ public class WebFragment extends Fragment {
 		} else {
 			wv.setWebViewClient(new WebViewClient());
 		}
-
 		wv.loadUrl(url);
+
+		view.findViewById(R.id.close).setOnClickListener(v -> replaceFragment(new HomeFragment()));
+		view.findViewById(R.id.previous).setOnClickListener(v -> {
+			if (wv.canGoBack()) {
+				wv.goBack();
+			}
+		});
+		view.findViewById(R.id.refresh).setOnClickListener(v -> {
+			v.setRotation(v.getRotation() + 90);
+			wv.reload();
+		});
 
 		return view;
 	}
