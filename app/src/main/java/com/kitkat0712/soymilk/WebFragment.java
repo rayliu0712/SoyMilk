@@ -1,6 +1,7 @@
 package com.kitkat0712.soymilk;
 
 import static com.kitkat0712.soymilk.MainActivity.VERSION_REQUEST_GETURL;
+import static com.kitkat0712.soymilk.MainActivity.ma;
 import static com.kitkat0712.soymilk.MainActivity.switchConfig;
 import static com.kitkat0712.soymilk.MainActivity.dndOnClick;
 import static com.kitkat0712.soymilk.MainActivity.isDNDOn;
@@ -14,12 +15,14 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.CookieManager;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebResourceResponse;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 
 import androidx.fragment.app.Fragment;
 
@@ -45,18 +48,23 @@ public class WebFragment extends Fragment {
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		View view = inflater.inflate(R.layout.fragment_web, container, false);
-		dndIV = view.findViewById(R.id.dnd);
-		wv = view.findViewById(R.id.web);
+		WebView wv = view.findViewById(R.id.webview);
+		WebSettings webSettings = wv.getSettings();
 
+		dndIV = view.findViewById(R.id.dnd);
 		dndIV.setOnClickListener(v -> {
 			if (dndOnClick()) {
 				setDNDVisual();
 			}
 		});
-		WebSettings webSettings = wv.getSettings();
+
+		wv.clearHistory();
+		webSettings.setCacheMode(WebSettings.LOAD_NO_CACHE);
+		webSettings.setDomStorageEnabled(false);
+		webSettings.setSaveFormData(false);
+		CookieManager.getInstance().setAcceptCookie(false);
+
 		webSettings.setJavaScriptEnabled(true);
-		webSettings.setCacheMode(WebSettings.LOAD_DEFAULT);
-		webSettings.setDomStorageEnabled(true);
 		webSettings.setSupportZoom(true);
 		webSettings.setBuiltInZoomControls(true);
 		webSettings.setDisplayZoomControls(false);

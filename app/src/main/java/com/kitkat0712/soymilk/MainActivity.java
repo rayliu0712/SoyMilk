@@ -16,7 +16,10 @@ import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.Settings;
+import android.text.InputType;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.Toast;
 
@@ -118,81 +121,6 @@ public class MainActivity extends AppCompatActivity {
 		}
 	}
 
-	public MainActivity() {
-		ma = this;
-	}
-
-
-	@Override
-	protected void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_main);
-
-		// setter
-		{
-			nm = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-			if (SDK_INT >= VERSION_DND) {
-				if (!nm.isNotificationPolicyAccessGranted()) {
-					Intent intent = new Intent(Settings.ACTION_NOTIFICATION_POLICY_ACCESS_SETTINGS);
-					startActivity(intent);
-				}
-			}
-
-			maskIV = findViewById(R.id.mask);
-			backgroundFile = new File(getFilesDir(), "background.jpg");
-			maskFile = new File(getFilesDir(), "mask.jpg");
-			if (backgroundFile.exists()) {
-				backgroundURI = Uri.fromFile(backgroundFile);
-			}
-			if (maskFile.exists()) {
-				maskIV.setImageURI(Uri.fromFile(maskFile));
-			}
-
-			switchFile = new File(getFilesDir(), "switch_config.json");
-			sauceFile = new File(getFilesDir(), "sauce_config.json");
-			historyFile = new File(getFilesDir(), "history_config.json");
-			loadConfig(switchFile, switchList, R.raw.switch_config);
-			loadConfig(sauceFile, sauceList, R.raw.sauce_config);
-			loadConfig(historyFile, historyList, R.raw.history_config);
-			switchConfig = new Gson().fromJson(String.join("\n", switchList), SwitchConfig.class);
-			sauceConfig = new Gson().fromJson(String.join("\n", sauceList), new TypeToken<ArrayList<SauceConfig>>(){}.getType());
-			historyConfig = new Gson().fromJson(String.join("\n", historyList), new TypeToken<ArrayList<HistoryConfig>>(){}.getType());
-
-			testFragment = new HomeFragment();
-			fm.beginTransaction().add(R.id.fragment_container, testFragment).commit();
-		}
-	}
-
-	@Override
-	protected void onResume() {
-		super.onResume();
-
-		if (isLateEnough(VERSION_DND)) {
-			dndOrigin = nm.getCurrentInterruptionFilter();
-			dndNow = dndOrigin;
-		}
-	}
-
-	@Override
-	protected void onPause() {
-		super.onPause();
-
-		if (isLateEnough(VERSION_DND)) {
-			nm.setInterruptionFilter(dndOrigin);
-		}
-	}
-
-	@Override
-	public void onWindowFocusChanged(boolean b) {
-		if (shouldIgnoreFocusChanged) {
-			shouldIgnoreFocusChanged = false;
-			return;
-		}
-		if (!switchConfig.enableMask) return;
-
-		maskIV.setVisibility(b ? View.GONE : View.VISIBLE);
-	}
-
 	public static void loadConfig(File file, ArrayList<String> list, int resource) {
 		BufferedReader br;
 		BufferedWriter bw;
@@ -227,5 +155,113 @@ public class MainActivity extends AppCompatActivity {
 			}
 		} catch (IOException ignored) {
 		}
+	}
+
+	public static void staticLayout() {
+		try {
+			Window window = ma.getWindow();
+			window.clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+			window.clearFlags(WindowManager.LayoutParams.FLAG_SECURE);
+
+			int uiOptions = 0;
+
+			// hide status bar
+			if (switchConfig.hideStatusBar) {
+				uiOptions |= View.SYSTEM_UI_FLAG_FULLSCREEN;
+				window.addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+			}
+
+			// hide navigation
+			if (switchConfig.hideNavigationBar) {
+				uiOptions |= View.SYSTEM_UI_FLAG_HIDE_NAVIGATION;
+			}
+
+			window.getDecorView().setSystemUiVisibility(uiOptions);
+
+			// secure flag
+			if (switchConfig.enableFlagSecure) {
+				window.addFlags(WindowManager.LayoutParams.FLAG_SECURE);
+			}
+		} catch (NullPointerException e) {
+			loadConfig(switchFile, switchList, R.raw.switch_config);
+		}
+	}
+
+	public MainActivity() {
+		ma = this;
+	}
+
+	@Override
+	protected void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		setContentView(R.layout.activity_main);
+
+		// setter
+		{
+			nm = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+			if (SDK_INT >= VERSION_DND) {
+				if (!nm.isNotificationPolicyAccessGranted()) {
+					Intent intent = new Intent(Settings.ACTION_NOTIFICATION_POLICY_ACCESS_SETTINGS);
+					startActivity(intent);
+				}
+			}
+
+			maskIV = findViewById(R.id.mask);
+			backgroundFile = new File(getFilesDir(), "background.jpg");
+			maskFile = new File(getFilesDir(), "mask.jpg");
+			if (backgroundFile.exists()) {
+				backgroundURI = Uri.fromFile(backgroundFile);
+			}
+			if (maskFile.exists()) {
+				maskIV.setImageURI(Uri.fromFile(maskFile));
+			}
+
+			switchFile = new File(getFilesDir(), "switch_config.json");
+			sauceFile = new File(getFilesDir(), "sauce_config.json");
+			historyFile = new File(getFilesDir(), "history_config.json");
+			loadConfig(switchFile, switchList, R.raw.switch_config);
+			loadConfig(sauceFile, sauceList, R.raw.sauce_config);
+			loadConfig(historyFile, historyList, R.raw.history_config);
+			switchConfig = new Gson().fromJson(String.join("\n", switchList), SwitchConfig.class);
+			sauceConfig = new Gson().fromJson(String.join("\n", sauceList), new TypeToken<ArrayList<SauceConfig>>() {
+			}.getType());
+			historyConfig = new Gson().fromJson(String.join("\n", historyList), new TypeToken<ArrayList<HistoryConfig>>() {
+			}.getType());
+
+			staticLayout();
+
+			testFragment = new HistoryFragment();
+			fm.beginTransaction().add(R.id.fragment_container, testFragment).commit();
+		}
+	}
+
+	@Override
+	protected void onResume() {
+		super.onResume();
+
+		if (isLateEnough(VERSION_DND)) {
+			dndOrigin = nm.getCurrentInterruptionFilter();
+			dndNow = dndOrigin;
+		}
+	}
+
+	@Override
+	protected void onPause() {
+		super.onPause();
+
+		if (isLateEnough(VERSION_DND)) {
+			nm.setInterruptionFilter(dndOrigin);
+		}
+	}
+
+	@Override
+	public void onWindowFocusChanged(boolean b) {
+		if (shouldIgnoreFocusChanged) {
+			shouldIgnoreFocusChanged = false;
+			return;
+		}
+		if (!switchConfig.enableMask) return;
+
+		maskIV.setVisibility(b ? View.GONE : View.VISIBLE);
 	}
 }
