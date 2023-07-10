@@ -84,8 +84,7 @@ public class WebFragment extends Fragment {
 							blocklist.append(strLine2);//if ":::::" exists in blocklist | Line for Line
 							blocklist.append("\n");
 						}
-					} catch (IOException e) {
-						e.printStackTrace();
+					} catch (IOException ignored) {
 					}
 				}
 			}
