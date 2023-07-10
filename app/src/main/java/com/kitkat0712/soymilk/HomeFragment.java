@@ -4,6 +4,7 @@ import static com.kitkat0712.soymilk.MainActivity.VERSION_SETTINT;
 import static com.kitkat0712.soymilk.MainActivity.backgroundFile;
 import static com.kitkat0712.soymilk.MainActivity.backgroundIV;
 import static com.kitkat0712.soymilk.MainActivity.backgroundURI;
+import static com.kitkat0712.soymilk.MainActivity.loadConfig;
 import static com.kitkat0712.soymilk.MainActivity.sauceConfig;
 import static com.kitkat0712.soymilk.MainActivity.switchConfig;
 import static com.kitkat0712.soymilk.MainActivity.dndOnClick;
@@ -12,6 +13,8 @@ import static com.kitkat0712.soymilk.MainActivity.isDNDOn;
 import static com.kitkat0712.soymilk.MainActivity.isLateEnough;
 import static com.kitkat0712.soymilk.MainActivity.ma;
 import static com.kitkat0712.soymilk.MainActivity.replaceFragment;
+import static com.kitkat0712.soymilk.MainActivity.switchFile;
+import static com.kitkat0712.soymilk.MainActivity.switchList;
 import static com.kitkat0712.soymilk.MainActivity.url;
 import static com.kitkat0712.soymilk.MainActivity.viewOriginalColor;
 
@@ -96,7 +99,6 @@ public class HomeFragment extends Fragment {
 
         // setter
         {
-            // layout & flag
             try {
                 Window window = ma.getWindow();
                 window.clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
@@ -122,30 +124,23 @@ public class HomeFragment extends Fragment {
                     window.addFlags(WindowManager.LayoutParams.FLAG_SECURE);
                 }
             } catch (NullPointerException e) {
-                MainActivity.newSwitchConfigFile();
+                loadConfig(switchFile, switchList, R.raw.switch_config);
             }
 
-
-            // sauce items
             sauceItems = new String[sauceConfig.size()];
             for (int i = 0; i < sauceConfig.size(); ++i) {
                 sauceItems[i] = sauceConfig.get(i).name;
             }
 
-
-            // background image
             if (backgroundURI != null) {
                 backgroundIV.setImageURI(backgroundURI);
                 getJPG(backgroundIV.getDrawable(), backgroundFile);
             }
 
-
-            // numpad
             if (!switchConfig.useNumPad) {
                 numberET.setInputType(InputType.TYPE_CLASS_TEXT);
             }
         }
-
 
         view.findViewById(R.id.view).setOnClickListener(v -> {
             imm.hideSoftInputFromWindow(numberET.getWindowToken(), 0);
