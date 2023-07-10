@@ -51,9 +51,8 @@ public class SettingFragment extends Fragment {
 		View view = inflater.inflate(R.layout.fragment_setting, container, false);
 
 		buffArray = switchConfig.toArray();
-
 		ListView switchLV = view.findViewById(R.id.switch_listview);
-		ArrayAdapter<String> switchAP = new ArrayAdapter<String>(ma, R.layout.list_switch_item, switchItems) {
+		switchLV.setAdapter(new ArrayAdapter<String>(ma, R.layout.list_switch_item, switchItems) {
 			@NonNull
 			@Override
 			public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
@@ -72,11 +71,9 @@ public class SettingFragment extends Fragment {
 
 				return listItemView;
 			}
-		};
-		switchLV.setAdapter(switchAP);
+		});
 
-		ListView buttonLV = view.findViewById(R.id.button_listview);
-		ArrayAdapter<String> buttonAP = new ArrayAdapter<String>(ma, R.layout.list_button_item, buttonItems) {
+		((ListView) view.findViewById(R.id.button_listview)).setAdapter(new ArrayAdapter<String>(ma, R.layout.list_button_item, buttonItems) {
 			@NonNull
 			@Override
 			public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
@@ -136,8 +133,7 @@ public class SettingFragment extends Fragment {
 
 				return listItemView;
 			}
-		};
-		buttonLV.setAdapter(buttonAP);
+		});
 
 		FloatingActionButton save = view.findViewById(R.id.save);
 		save.setOnClickListener(v -> {
@@ -165,12 +161,10 @@ public class SettingFragment extends Fragment {
 					bw.write(line);
 					bw.newLine();
 				}
-
 				bw.write(tail);
 				bw.newLine();
 				bw.close();
-			} catch (IOException e) {
-				e.printStackTrace();
+			} catch (IOException ignored) {
 			}
 			Toast.makeText(ma, "Saved", Toast.LENGTH_SHORT).show();
 			replaceFragment(new HomeFragment());
