@@ -6,6 +6,7 @@ import static com.kitkat0712.soymilk.MainActivity.backgroundIV;
 import static com.kitkat0712.soymilk.MainActivity.backgroundURI;
 import static com.kitkat0712.soymilk.MainActivity.loadConfig;
 import static com.kitkat0712.soymilk.MainActivity.sauceConfig;
+import static com.kitkat0712.soymilk.MainActivity.staticLayout;
 import static com.kitkat0712.soymilk.MainActivity.switchConfig;
 import static com.kitkat0712.soymilk.MainActivity.dndOnClick;
 import static com.kitkat0712.soymilk.MainActivity.getJPG;
@@ -99,33 +100,7 @@ public class HomeFragment extends Fragment {
 
         // setter
         {
-            try {
-                Window window = ma.getWindow();
-                window.clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
-                window.clearFlags(WindowManager.LayoutParams.FLAG_SECURE);
-
-                int uiOptions = 0;
-
-                // hide status bar
-                if (switchConfig.hideStatusBar) {
-                    uiOptions |= View.SYSTEM_UI_FLAG_FULLSCREEN;
-                    window.addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
-                }
-
-                // hide navigation
-                if (switchConfig.hideNavigationBar) {
-                    uiOptions |= View.SYSTEM_UI_FLAG_HIDE_NAVIGATION;
-                }
-
-                window.getDecorView().setSystemUiVisibility(uiOptions);
-
-                // secure flag
-                if (switchConfig.enableFlagSecure) {
-                    window.addFlags(WindowManager.LayoutParams.FLAG_SECURE);
-                }
-            } catch (NullPointerException e) {
-                loadConfig(switchFile, switchList, R.raw.switch_config);
-            }
+            staticLayout();
 
             sauceItems = new String[sauceConfig.size()];
             for (int i = 0; i < sauceConfig.size(); ++i) {

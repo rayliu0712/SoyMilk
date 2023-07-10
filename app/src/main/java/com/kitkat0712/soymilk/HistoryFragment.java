@@ -1,6 +1,8 @@
 package com.kitkat0712.soymilk;
 
 import static com.kitkat0712.soymilk.MainActivity.historyConfig;
+import static com.kitkat0712.soymilk.MainActivity.historyFile;
+import static com.kitkat0712.soymilk.MainActivity.historyList;
 import static com.kitkat0712.soymilk.MainActivity.ma;
 
 import android.os.Bundle;
@@ -19,6 +21,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 
 public class HistoryFragment extends Fragment {
@@ -27,25 +30,30 @@ public class HistoryFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_history, container, false);
 
-        ((ListView) view.findViewById(R.id.listview)).setAdapter(
-                new ArrayAdapter<HistoryConfig>(ma, R.layout.list_history_item, historyConfig) {
-                    @NonNull
-                    @Override
-                    public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
-                        View listItemView = convertView;
-                        if (listItemView == null) {
-                            listItemView = LayoutInflater.from(ma).inflate(R.layout.list_history_item, parent, false);
-                        }
-
-                        HistoryConfig currentItem = historyConfig.get(position);
-
-                        ((TextView) listItemView.findViewById(R.id.date)).setText(currentItem.date);
-                        ((TextView) listItemView.findViewById(R.id.url)).setText(currentItem.url);
-
-                        return listItemView;
-                    }
+        ArrayAdapter<HistoryConfig> ap = new ArrayAdapter<HistoryConfig>(ma, R.layout.list_history_item, historyConfig) {
+            @NonNull
+            @Override
+            public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
+                View listItemView = convertView;
+                if (listItemView == null) {
+                    listItemView = LayoutInflater.from(ma).inflate(R.layout.list_history_item, parent, false);
                 }
-        );
+
+                HistoryConfig currentItem = historyConfig.get(position);
+
+                ((TextView) listItemView.findViewById(R.id.date)).setText(currentItem.date);
+                ((TextView) listItemView.findViewById(R.id.url)).setText(currentItem.url);
+
+                return listItemView;
+            }
+        };
+        ((ListView) view.findViewById(R.id.listview)).setAdapter(ap);
+
+        view.findViewById(R.id.clear).setOnClickListener(v -> {
+            historyConfig.clear();
+            historyFile.delete();
+            ap.notifyDataSetChanged();
+        });
 
         return view;
     }
