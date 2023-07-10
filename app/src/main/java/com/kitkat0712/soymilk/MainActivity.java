@@ -42,8 +42,14 @@ import java.util.List;
 public class MainActivity extends AppCompatActivity {
 	// test
 	private final Fragment testFragment = new HistoryFragment();
-	public static final String tag = "tag";
+	public static HistoryConfig[] historyConfig;
+	public static File historyFile;
+	public static List<String> historyList = new ArrayList<>();
 
+
+
+
+	public static final String tag = "tag";
 	public static final int VERSION_DND = M;
 	public static final int VERSION_SETTINT = LOLLIPOP;
 	public static final int VERSION_REQUEST_GETURL = LOLLIPOP;
@@ -57,13 +63,10 @@ public class MainActivity extends AppCompatActivity {
 
 	public static SwitchConfig switchConfig;
 	public static List<SauceConfig> sauceConfig;
-	public static HistoryConfig[] historyConfig;
 	public static File switchFile;
 	public static File sauceFile;
-	public static File historyFile;
 	public static List<String> switchList = new ArrayList<>();
 	public static List<String> sauceList = new ArrayList<>();
-	public static List<String> historyList = new ArrayList<>();
 
 	public static File backgroundFile;
 	public static File maskFile;
@@ -191,27 +194,16 @@ public class MainActivity extends AppCompatActivity {
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
-		// grant dnd access
-		{
-			if (SDK_INT >= VERSION_DND) {
-				if (!((NotificationManager) getSystemService(NOTIFICATION_SERVICE)).isNotificationPolicyAccessGranted()) {
-					Intent intent = new Intent(Settings.ACTION_NOTIFICATION_POLICY_ACCESS_SETTINGS);
-					startActivity(intent);
-				}
-			}
-		}
-
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 
-		// init public variables
+		// setter
 		{
+			// init public variables
 			nm = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
 			maskIV = findViewById(R.id.mask);
-		}
 
-		// load switch_config.json
-		{
+			// load switch_config.json
 			switchFile = new File(getFilesDir(), "switch_config.json");
 
 			try {
@@ -232,71 +224,71 @@ public class MainActivity extends AppCompatActivity {
 				e.printStackTrace();
 			}
 			switchConfig = new Gson().fromJson(String.join("\n", switchList), SwitchConfig.class);
-		}
 
-		// load sauce_config.json
-		{
-			sauceFile = new File(getFilesDir(), "sauce_config.json");
+			// load sauce_config.json
+			{
+				sauceFile = new File(getFilesDir(), "sauce_config.json");
 
-			try {
-				if (sauceFile.exists()) {
-					BufferedReader br = new BufferedReader(new FileReader(sauceFile));
-					StringBuilder sb = new StringBuilder();
-					String line;
+				try {
+					if (sauceFile.exists()) {
+						BufferedReader br = new BufferedReader(new FileReader(sauceFile));
+						StringBuilder sb = new StringBuilder();
+						String line;
 
-					while ((line = br.readLine()) != null) {
-						sb.append(line);
-						sauceList.add(line);
+						while ((line = br.readLine()) != null) {
+							sb.append(line);
+							sauceList.add(line);
+						}
+						br.close();
+					} else {
+						newSauceConfigFile();
 					}
-					br.close();
-				} else {
-					newSauceConfigFile();
+				} catch (IOException e) {
+					e.printStackTrace();
 				}
-			} catch (IOException e) {
-				e.printStackTrace();
+				sauceConfig = new Gson().fromJson(String.join("\n", sauceList), new TypeToken<List<SauceConfig>>(){}.getType());
 			}
-			sauceConfig = new Gson().fromJson(String.join("\n", sauceList), new TypeToken<List<SauceConfig>>(){}.getType());
-		}
 
-		// load history_config.json
-		{
-			historyFile = new File(getFilesDir(), "history_config.json");
+			// load history_config.json
+			{
+				historyFile = new File(getFilesDir(), "history_config.json");
 
-			try {
-				if (historyFile.exists()) {
-					BufferedReader br = new BufferedReader(new FileReader(historyFile));
-					StringBuilder sb = new StringBuilder();
-					String line;
+				try {
+					if (historyFile.exists()) {
+						BufferedReader br = new BufferedReader(new FileReader(historyFile));
+						StringBuilder sb = new StringBuilder();
+						String line;
 
-					while ((line = br.readLine()) != null) {
-						sb.append(line);
-						historyList.add(line);
+						while ((line = br.readLine()) != null) {
+							sb.append(line);
+							historyList.add(line);
+						}
+						br.close();
+					} else {
+						newHistoryConfigFile();
 					}
-					br.close();
-				} else {
-					newHistoryConfigFile();
+				} catch (IOException e) {
+					e.printStackTrace();
 				}
-			} catch (IOException e) {
-				e.printStackTrace();
+				historyConfig = new Gson().fromJson(String.join("\n", historyList), HistoryConfig[].class);
 			}
-			historyConfig = new Gson().fromJson(String.join("\n", historyList), HistoryConfig[].class);
-		}
 
-		// load image
-		{
-			backgroundFile = new File(getFilesDir(), "background.jpg");
-			maskFile = new File(getFilesDir(), "mask.jpg");
+			// load image
+			{
+				backgroundFile = new File(getFilesDir(), "background.jpg");
+				maskFile = new File(getFilesDir(), "mask.jpg");
 
-			if (backgroundFile.exists())
-				backgroundURI = Uri.fromFile(backgroundFile);
+				if (backgroundFile.exists())
+					backgroundURI = Uri.fromFile(backgroundFile);
 
-			if (maskFile.exists())
-				maskIV.setImageURI(Uri.fromFile(maskFile));
-		}
+				if (maskFile.exists())
+					maskIV.setImageURI(Uri.fromFile(maskFile));
+			}
 
-		// set fragment
-		{
-			fm.beginTransaction().add(R.id.fragment_container, testFragment).commit();
+			// set fragment
+			{
+				fm.beginTransaction().add(R.id.fragment_container, testFragment).commit();
+			}
 		}
 	}
 
@@ -328,5 +320,25 @@ public class MainActivity extends AppCompatActivity {
 		if (!switchConfig.enableMask) return;
 
 		maskIV.setVisibility(b ? View.GONE : View.VISIBLE);
+	}
+
+	private void foo(File file, List<String> stringList) {
+		try {
+			if (file.exists()) {
+				BufferedReader br = new BufferedReader(new FileReader(file));
+				StringBuilder sb = new StringBuilder();
+				String line;
+
+				while ((line = br.readLine()) != null) {
+					sb.append(line);
+					stringList.add(line);
+				}
+				br.close();
+			} else {
+				newSwitchConfigFile();
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 }
