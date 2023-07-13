@@ -14,43 +14,37 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
-public class HistoryFragment extends Fragment {
-
+public class LibraryFragment extends Fragment {
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-		View view = inflater.inflate(R.layout.fragment_history, container, false);
+		View view = inflater.inflate(R.layout.fragment_library, container, false);
 
-		ArrayAdapter<HistoryConfig> ap = new ArrayAdapter<HistoryConfig>(ma, R.layout.listitem_history, ma.historyConfig) {
+		view.findViewById(R.id.back).setOnClickListener(v -> {
+			ma.replaceFragment(new HomeFragment());
+		});
+
+		((ListView) view.findViewById(R.id.listview)).setAdapter(new ArrayAdapter<BookmarkConfig>(ma, R.layout.listitem_library, ma.bookmarkConfig) {
 			@NonNull
 			@Override
 			public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
-				HistoryConfig currentItem = ma.historyConfig.get(position);
-
 				View listItemView = convertView;
+				BookmarkConfig currentItem = ma.bookmarkConfig.get(position);
 				if (listItemView == null) {
-					listItemView = LayoutInflater.from(ma).inflate(R.layout.listitem_history, parent, false);
+					listItemView = LayoutInflater.from(ma).inflate(R.layout.listitem_library, parent, false);
 				}
+
 				listItemView.setOnClickListener(v -> {
 					ma.url = currentItem.url;
+					ma.number = currentItem.number;
 					ma.replaceFragment(new WebFragment());
 				});
-
-
-				((TextView) listItemView.findViewById(R.id.date)).setText(currentItem.date);
-				((TextView) listItemView.findViewById(R.id.url)).setText(currentItem.url);
-
+				((TextView) listItemView.findViewById(R.id.name)).setText(currentItem.name);
+				((TextView) listItemView.findViewById(R.id.number)).setText(currentItem.number);
 
 				return listItemView;
 			}
-		};
-		((ListView) view.findViewById(R.id.listview)).setAdapter(ap);
-
-		view.findViewById(R.id.back).setOnClickListener(v -> ma.replaceFragment(new HomeFragment()));
-		view.findViewById(R.id.clear).setOnClickListener(v -> {
-			ma.historyConfig.clear();
-			ma.historyFile.delete();
-			ap.notifyDataSetChanged();
 		});
 
 		return view;

@@ -6,19 +6,16 @@ import static android.app.NotificationManager.INTERRUPTION_FILTER_PRIORITY;
 import static android.os.Build.VERSION.SDK_INT;
 import static android.os.Build.VERSION_CODES.LOLLIPOP;
 import static android.os.Build.VERSION_CODES.M;
-
 import static java.lang.String.format;
 
 import android.app.NotificationManager;
 import android.content.Intent;
-import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.Settings;
-import android.text.InputType;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -30,6 +27,7 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 
 import java.io.BufferedReader;
@@ -43,251 +41,267 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.util.ArrayList;
-import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
-    // test
-    private Fragment testFragment;
-    public static final String tag = "tag";
+	public static MainActivity ma;
 
-    public static final int VERSION_DND = M;
-    public static final int VERSION_SETTINT = LOLLIPOP;
-    public static final int VERSION_REQUEST_GETURL = LOLLIPOP;
+	public final int VERSION_DND = M;
+	public final int VERSION_REQUEST_GETURL = LOLLIPOP;
 
-    public static String url = "https://www.google.com";
-    public static boolean shouldIgnoreFocusChanged = false;
-    public static MainActivity ma;
-    public static int dndOrigin;
-    public static int dndNow;
-    public static int viewOriginalColor;
+	public int choosenSauce = 0;
+	public String number = "666";
+	public String url = "777";
+	public boolean shouldIgnoreFocusChanged = false;
+	public int dndOrigin;
+	public int dndNow;
 
-    public static SwitchConfig switchConfig;
-    public static ArrayList<SauceConfig> sauceConfig;
-    public static ArrayList<HistoryConfig> historyConfig;
+	public SwitchConfig switchConfig;
+	public ArrayList<SauceConfig> sauceConfig;
+	public ArrayList<BookmarkConfig> bookmarkConfig;
+	public ArrayList<HistoryConfig> historyConfig;
 
-    public static File switchFile;
-    public static File sauceFile;
-    public static File historyFile;
-    public static ArrayList<String> switchList = new ArrayList<>();
-    public static ArrayList<String> sauceList = new ArrayList<>();
-    public static ArrayList<String> historyList = new ArrayList<>();
+	public File switchFile;
+	public File sauceFile;
+	public File bookmarkFile;
+	public File historyFile;
 
-    public static File backgroundFile;
-    public static File maskFile;
-    public static Uri backgroundURI = null;
-    public static ImageView backgroundIV;
-    public static ImageView maskIV;
+	public ArrayList<String> switchList = new ArrayList<>();
+	public ArrayList<String> sauceList = new ArrayList<>();
+	public ArrayList<String> bookmarkList = new ArrayList<>();
+	public ArrayList<String> historyList = new ArrayList<>();
 
-    private final FragmentManager fm = getSupportFragmentManager();
-    private NotificationManager nm;
+	public File backgroundFile;
+	public File maskFile;
+	public Uri backgroundURI = null;
+	public ImageView backgroundIV;
+	public ImageView maskIV;
 
-    public static void debugCaution(String msg) {
-        Toast.makeText(ma, format("CAUTION %s", msg), Toast.LENGTH_SHORT).show();
-    }
+	private final FragmentManager fm = getSupportFragmentManager();
+	private NotificationManager nm;
 
-    public static boolean isLateEnough(final int REQUIRED_VERSION) {
-        return SDK_INT >= REQUIRED_VERSION;
-    }
+	public void debugCaution(String msg) {
+		Toast.makeText(ma, format("CAUTION %s", msg), Toast.LENGTH_SHORT).show();
+	}
 
-    public static boolean dndOnClick() {
-        if (isLateEnough(VERSION_DND)) {
-            NotificationManager nm = (NotificationManager) ma.getSystemService(NOTIFICATION_SERVICE);
+	public boolean isLateEnough(final int REQUIRED_VERSION) {
+		return SDK_INT >= REQUIRED_VERSION;
+	}
 
-            if (nm.isNotificationPolicyAccessGranted()) {
-                dndNow = isDNDOn() ? INTERRUPTION_FILTER_ALL : INTERRUPTION_FILTER_NONE;
+	public boolean dndOnClick() {
+		if (isLateEnough(VERSION_DND)) {
+			NotificationManager nm = (NotificationManager) ma.getSystemService(NOTIFICATION_SERVICE);
 
-                nm.setInterruptionFilter(dndNow);
-                return true;
-            }
-        } else {
-            Toast.makeText(ma, format("Required API Level %d\nYour API Level %d", VERSION_DND, SDK_INT), Toast.LENGTH_LONG).show();
-        }
-        return false;
-    }
+			if (nm.isNotificationPolicyAccessGranted()) {
+				dndNow = isDNDOn() ? INTERRUPTION_FILTER_ALL : INTERRUPTION_FILTER_NONE;
 
-    public static boolean isDNDOn() {
-        return dndNow >= INTERRUPTION_FILTER_PRIORITY;
-    }
+				nm.setInterruptionFilter(dndNow);
+				return true;
+			}
+		} else {
+			Toast.makeText(ma, format("Required API Level %d\nYour API Level %d", VERSION_DND, SDK_INT), Toast.LENGTH_LONG).show();
+		}
+		return false;
+	}
 
-    public static void replaceFragment(Fragment fragment) {
-        ma.getSupportFragmentManager()
-                .beginTransaction()
-                .replace(R.id.fragment_container, fragment)
-                .commit();
-    }
+	public boolean isDNDOn() {
+		return dndNow >= INTERRUPTION_FILTER_PRIORITY;
+	}
 
-    public static void getJPG(Drawable drawable, File file) {
-        Bitmap bitmap = ((BitmapDrawable) drawable).getBitmap();
-        try {
-            OutputStream outputStream = new FileOutputStream(file);
-            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, outputStream);
-            outputStream.close();
-        } catch (IOException ignored) {
-        }
-    }
+	public void replaceFragment(Fragment fragment) {
+		ma.getSupportFragmentManager()
+				.beginTransaction()
+				.replace(R.id.fragment_container, fragment)
+				.commit();
+	}
 
-    public static void loadConfig(File file, ArrayList<String> list, int resource) {
-        BufferedReader br;
-        BufferedWriter bw;
-        StringBuilder sb;
-        String line;
-        InputStream is;
+	public void getJPG(Drawable drawable, File file) {
+		Bitmap bitmap = ((BitmapDrawable) drawable).getBitmap();
+		try {
+			OutputStream outputStream = new FileOutputStream(file);
+			bitmap.compress(Bitmap.CompressFormat.JPEG, 100, outputStream);
+			outputStream.close();
+		} catch (IOException ignored) {
+		}
+	}
 
-        try {
-            if (file.exists()) {
-                br = new BufferedReader(new FileReader(file));
-                sb = new StringBuilder();
-                while ((line = br.readLine()) != null) {
-                    sb.append(line);
-                    list.add(line);
-                }
-                br.close();
-            } else {
-                throw new IOException();
-            }
-        } catch (IOException ignored) {
-            try {
-                debugCaution("load config");
+	public void loadConfig(File file, ArrayList<String> list, int resource) {
+		BufferedReader br;
+		BufferedWriter bw;
+		StringBuilder sb;
+		String line;
+		InputStream is;
 
-                if (!file.delete()) file.createNewFile();
+		try {
+			if (file.exists()) {
+				br = new BufferedReader(new FileReader(file));
+				sb = new StringBuilder();
+				while ((line = br.readLine()) != null) {
+					sb.append(line);
+					list.add(line);
+				}
+				br.close();
+			} else {
+				throw new IOException();
+			}
+		} catch (IOException ignored) {
+			try {
+				debugCaution("load config");
 
-                is = ma.getResources().openRawResource(resource);
-                bw = new BufferedWriter(new FileWriter(file));
-                br = new BufferedReader(new InputStreamReader(is));
-                sb = new StringBuilder();
-                while ((line = br.readLine()) != null) {
-                    sb.append(line);
-                    bw.write(line);
-                    bw.newLine();
-                    list.add(line);
-                }
-                bw.close();
-                br.close();
-            } catch (IOException ignoredA) {
-            }
-        }
-    }
-    public static void ftsio() {
-        switchFile.delete();
-        sauceFile.delete();
-        historyFile.delete();
-        loadConfig(switchFile, switchList, R.raw.switch_config);
-        loadConfig(sauceFile, sauceList, R.raw.sauce_config);
-        loadConfig(historyFile, historyList, R.raw.history_config);
-    }
-    public static void staticLayout() {
-        try {
-            Window window = ma.getWindow();
-            window.clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
-            window.clearFlags(WindowManager.LayoutParams.FLAG_SECURE);
+				if (!file.delete()) file.createNewFile();
 
-            int uiOptions = 0;
+				is = ma.getResources().openRawResource(resource);
+				bw = new BufferedWriter(new FileWriter(file));
+				br = new BufferedReader(new InputStreamReader(is));
+				sb = new StringBuilder();
+				while ((line = br.readLine()) != null) {
+					sb.append(line);
+					bw.write(line);
+					bw.newLine();
+					list.add(line);
+				}
+				bw.close();
+				br.close();
+			} catch (IOException ignoredA) {
+			}
+		}
+	}
 
-            // hide status bar
-            if (switchConfig.hideStatusBar) {
-                uiOptions |= View.SYSTEM_UI_FLAG_FULLSCREEN;
-                window.addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
-            }
+	public <T> void writeListConfig(File file, ArrayList<T> config) {
+		try {
+			BufferedWriter bw = new BufferedWriter(new FileWriter(file));
+			bw.write(new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create().toJson(config));
+			bw.close();
+		} catch (IOException ignored) {
+		}
+	}
 
-            // hide navigation
-            if (switchConfig.hideNavigationBar) {
-                uiOptions |= View.SYSTEM_UI_FLAG_HIDE_NAVIGATION;
-            }
+	public void ftsio() {
+		switchFile.delete();
+		sauceFile.delete();
+		historyFile.delete();
+		bookmarkFile.delete();
+		loadConfig(switchFile, switchList, R.raw.switch_config);
+		loadConfig(sauceFile, sauceList, R.raw.sauce_config);
+		loadConfig(historyFile, historyList, R.raw.history_config);
+		loadConfig(bookmarkFile, bookmarkList, R.raw.bookmark_config);
+	}
 
-            window.getDecorView().setSystemUiVisibility(uiOptions);
+	public void staticLayout() {
+		try {
+			Window window = ma.getWindow();
+			window.clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+			window.clearFlags(WindowManager.LayoutParams.FLAG_SECURE);
 
-            // secure flag
-            if (switchConfig.enableFlagSecure) {
-                window.addFlags(WindowManager.LayoutParams.FLAG_SECURE);
-            }
-        } catch (NullPointerException ignored) {
-            loadConfig(switchFile, switchList, R.raw.switch_config);
-        }
-    }
+			int uiOptions = 0;
 
-    public MainActivity() {
-        ma = this;
-    }
+			// hide status bar
+			if (switchConfig.hideStatusBar) {
+				uiOptions |= View.SYSTEM_UI_FLAG_FULLSCREEN;
+				window.addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+			}
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+			// hide navigation
+			if (switchConfig.hideNavigationBar) {
+				uiOptions |= View.SYSTEM_UI_FLAG_HIDE_NAVIGATION;
+			}
 
-        // setter
-        {
-            nm = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-            if (SDK_INT >= VERSION_DND) {
-                if (!nm.isNotificationPolicyAccessGranted()) {
-                    Intent intent = new Intent(Settings.ACTION_NOTIFICATION_POLICY_ACCESS_SETTINGS);
-                    startActivity(intent);
-                }
-            }
+			window.getDecorView().setSystemUiVisibility(uiOptions);
 
-            maskIV = findViewById(R.id.mask);
-            backgroundFile = new File(getFilesDir(), "background.jpg");
-            maskFile = new File(getFilesDir(), "mask.jpg");
-            if (backgroundFile.exists()) {
-                backgroundURI = Uri.fromFile(backgroundFile);
-            }
-            if (maskFile.exists()) {
-                maskIV.setImageURI(Uri.fromFile(maskFile));
-            }
+			// secure flag
+			if (switchConfig.enableFlagSecure) {
+				window.addFlags(WindowManager.LayoutParams.FLAG_SECURE);
+			}
+		} catch (NullPointerException ignored) {
+			loadConfig(switchFile, switchList, R.raw.switch_config);
+		}
+	}
 
-            switchFile = new File(getFilesDir(), "switch_config.json");
-            sauceFile = new File(getFilesDir(), "sauce_config.json");
-            historyFile = new File(getFilesDir(), "history_config.json");
-            loadConfig(switchFile, switchList, R.raw.switch_config);
-            loadConfig(sauceFile, sauceList, R.raw.sauce_config);
-            loadConfig(historyFile, historyList, R.raw.history_config);
+	public MainActivity() {
+		ma = this;
+	}
 
-            try {
-                switchConfig = new Gson().fromJson(String.join("\n", switchList), SwitchConfig.class);
-                sauceConfig = new Gson().fromJson(String.join("\n", sauceList), new TypeToken<ArrayList<SauceConfig>>() {
-                }.getType());
-                historyConfig = new Gson().fromJson(String.join("\n", historyList), new TypeToken<ArrayList<HistoryConfig>>() {
-                }.getType());
-            }
-            catch (Exception ignored) {
-                debugCaution("Gson");
-                ftsio();
-                finish();
-            }
+	@Override
+	protected void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		setContentView(R.layout.activity_main);
 
-            staticLayout();
+		// setter
+		{
+			nm = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+			if (SDK_INT >= VERSION_DND) {
+				if (!nm.isNotificationPolicyAccessGranted()) {
+					Intent intent = new Intent(Settings.ACTION_NOTIFICATION_POLICY_ACCESS_SETTINGS);
+					startActivity(intent);
+				}
+			}
 
-            testFragment = new HistoryFragment();
-            fm.beginTransaction().add(R.id.fragment_container, testFragment).commit();
-        }
-    }
+			maskIV = findViewById(R.id.mask);
+			backgroundFile = new File(getFilesDir(), "background.jpg");
+			maskFile = new File(getFilesDir(), "mask.jpg");
+			if (backgroundFile.exists()) {
+				backgroundURI = Uri.fromFile(backgroundFile);
+			}
+			if (maskFile.exists()) {
+				maskIV.setImageURI(Uri.fromFile(maskFile));
+			}
 
-    @Override
-    protected void onResume() {
-        super.onResume();
+			switchFile = new File(getFilesDir(), "switch_config.json");
+			sauceFile = new File(getFilesDir(), "sauce_config.json");
+			historyFile = new File(getFilesDir(), "history_config.json");
+			bookmarkFile = new File(getFilesDir(), "bookmark_config.json");
+			loadConfig(switchFile, switchList, R.raw.switch_config);
+			loadConfig(sauceFile, sauceList, R.raw.sauce_config);
+			loadConfig(historyFile, historyList, R.raw.history_config);
+			loadConfig(bookmarkFile, bookmarkList, R.raw.bookmark_config);
 
-        if (isLateEnough(VERSION_DND)) {
-            dndOrigin = nm.getCurrentInterruptionFilter();
-            dndNow = dndOrigin;
-        }
-    }
+			try {
+				switchConfig = new Gson().fromJson(String.join("\n", switchList), SwitchConfig.class);
+				sauceConfig = new Gson().fromJson(String.join("\n", sauceList), new TypeToken<ArrayList<SauceConfig>>() {
+				}.getType());
+				historyConfig = new Gson().fromJson(String.join("\n", historyList), new TypeToken<ArrayList<HistoryConfig>>() {
+				}.getType());
+				bookmarkConfig = new Gson().fromJson(String.join("\n", bookmarkList), new TypeToken<ArrayList<BookmarkConfig>>() {
+				}.getType());
+			} catch (Exception ignored) {
+				debugCaution("Gson");
+				ftsio();
+				finish();
+			}
 
-    @Override
-    protected void onPause() {
-        super.onPause();
+			staticLayout();
 
-        if (isLateEnough(VERSION_DND)) {
-            nm.setInterruptionFilter(dndOrigin);
-        }
-    }
+			Fragment testFragment = new HomeFragment();
+			fm.beginTransaction().add(R.id.fragment_container, testFragment).commit();
+		}
+	}
 
-    @Override
-    public void onWindowFocusChanged(boolean b) {
-        if (shouldIgnoreFocusChanged) {
-            shouldIgnoreFocusChanged = false;
-            return;
-        }
-        if (!switchConfig.enableMask) return;
+	@Override
+	protected void onResume() {
+		super.onResume();
 
-        maskIV.setVisibility(b ? View.GONE : View.VISIBLE);
-    }
+		if (isLateEnough(VERSION_DND)) {
+			dndOrigin = nm.getCurrentInterruptionFilter();
+			dndNow = dndOrigin;
+		}
+	}
+
+	@Override
+	protected void onPause() {
+		super.onPause();
+
+		if (isLateEnough(VERSION_DND)) {
+			nm.setInterruptionFilter(dndOrigin);
+		}
+	}
+
+	@Override
+	public void onWindowFocusChanged(boolean b) {
+		if (shouldIgnoreFocusChanged) {
+			shouldIgnoreFocusChanged = false;
+			return;
+		}
+		if (!switchConfig.enableMask) return;
+
+		maskIV.setVisibility(b ? View.GONE : View.VISIBLE);
+	}
 }

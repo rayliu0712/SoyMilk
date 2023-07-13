@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".HistoryFragment">
+    tools:context=".LibraryFragment">
 
     <TextView
         android:layout_width="match_parent"
@@ -24,10 +24,10 @@
             android:layout_marginTop="20dp">
 
             <TextView
+                android:gravity="center"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:gravity="center"
-                android:text="@string/history_fragment"
+                android:text="@string/library_fragment"
                 android:textSize="40sp" />
 
             <ImageView
@@ -42,28 +42,14 @@
 
         <ListView
             android:id="@+id/listview"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="20dp"
             android:layout_marginTop="20dp"
             android:layout_marginEnd="20dp"
             android:divider="@null"
-            android:dividerHeight="20dp" />
+            android:dividerHeight="40dp" />
 
     </LinearLayout>
-
-    <androidx.coordinatorlayout.widget.CoordinatorLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
-
-        <com.google.android.material.floatingactionbutton.FloatingActionButton
-            android:id="@+id/clear"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="bottom|end"
-            android:layout_margin="20dp"
-            android:src="@drawable/delete" />
-
-    </androidx.coordinatorlayout.widget.CoordinatorLayout>
 
 </FrameLayout>

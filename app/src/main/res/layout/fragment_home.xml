@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
@@ -23,7 +22,6 @@
             android:id="@+id/number"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="5dp"
             android:background="@null"
             android:fontFamily="@font/robotomono_thin"
             android:gravity="center"
@@ -44,25 +42,44 @@
                 android:layout_height="5dp"
                 android:layout_weight="1" />
 
-            <TextView
+            <ImageView
                 android:id="@+id/dnd"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/dnd"
-                android:textSize="26sp"
-                app:drawableLeftCompat="@drawable/dnd" />
+                android:src="@drawable/dnd" />
 
             <View
                 android:layout_width="0dp"
                 android:layout_height="5dp"
                 android:layout_weight="1" />
 
-            <TextView
+            <ImageView
+                android:id="@+id/bookmark"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/bookmark"
-                android:textSize="26sp"
-                app:drawableLeftCompat="@drawable/bookmark" />
+                android:src="@drawable/bookmark" />
+
+            <View
+                android:layout_width="0dp"
+                android:layout_height="5dp"
+                android:layout_weight="1" />
+
+            <ImageView
+                android:id="@+id/library"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/library" />
+
+            <View
+                android:layout_width="0dp"
+                android:layout_height="5dp"
+                android:layout_weight="1" />
+
+            <ImageView
+                android:id="@+id/history"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/history" />
 
             <View
                 android:layout_width="0dp"
@@ -71,7 +88,7 @@
 
         </LinearLayout>
 
-        <androidx.coordinatorlayout.widget.CoordinatorLayout
+        <RelativeLayout
             android:id="@+id/view"
             android:layout_width="match_parent"
             android:layout_height="match_parent">
@@ -81,20 +98,36 @@
                 android:layout_height="wrap_content"
                 android:orientation="vertical">
 
-                <EditText
-                    android:id="@+id/url"
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:textSize="25sp" />
+                    android:layout_marginTop="40dp"
+                    android:orientation="horizontal">
+
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:layout_marginStart="30dp"
+                        android:src="@drawable/copy" />
+
+                    <EditText
+                        android:id="@+id/url"
+                        android:layout_width="match_parent"
+                        android:layout_height="35dp"
+                        android:layout_marginStart="10dp"
+                        android:background="@null"
+                        android:hint="@string/empty"
+                        android:textSize="22sp" />
+                </LinearLayout>
 
                 <ListView
                     android:id="@+id/listview"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_gravity="top|center"
+                    android:layout_margin="60dp"
                     android:divider="@null"
-                    android:dividerHeight="15dp"
-                    android:padding="60dp" />
+                    android:dividerHeight="15dp" />
 
             </LinearLayout>
 
@@ -102,7 +135,8 @@
                 android:id="@+id/setting"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="bottom|start"
+                android:layout_alignParentStart="true"
+                android:layout_alignParentBottom="true"
                 android:layout_marginStart="-20dp"
                 android:layout_marginBottom="50dp"
                 android:rotation="-90"
@@ -110,16 +144,16 @@
                 android:textSize="25sp" />
 
             <com.google.android.material.floatingactionbutton.FloatingActionButton
-
                 android:id="@+id/surfweb"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="bottom|end"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentBottom="true"
                 android:layout_margin="20dp"
                 android:contentDescription="@string/app_name"
                 android:src="@drawable/hands" />
 
-        </androidx.coordinatorlayout.widget.CoordinatorLayout>
+        </RelativeLayout>
 
     </LinearLayout>
 

@@ -1,13 +1,8 @@
 <resources>
     <string name="app_name">SoyMilk</string>
-    <string name="image">Image</string>
-    <string name="dnd">DND</string>
-    <string name="bookmark">Bookmark</string>
-    <string name="close">Close</string>
-    <string name="previous">Previous</string>
-    <string name="refresh">Refresh</string>
     <string name="setting_fragment">Setting</string>
-    <string name="setting">[ Setting ]</string>
     <string name="history_fragment">History</string>
+    <string name="library_fragment">Library</string>
+    <string name="setting">[ Setting ]</string>
     <string name="empty">EMPTY</string>
 </resources>
