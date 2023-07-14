@@ -29,7 +29,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 
 public class SettingFragment extends Fragment {
-	private static final String[] switchItems = {"隱藏狀態列", "隱藏導覽列", "啟用flag_secure", "啟用AdBlock", "啟用遮罩", "使用數字鍵盤"};
+	private static final String[] switchItems = {"隱藏狀態列", "隱藏導覽列", "啟用flag_secure", "啟用AdBlock", "啟用歷史紀錄", "啟用遮罩", "使用數字鍵盤"};
 	private static final String[] buttonItems = {"[ 設定主頁面背景圖片 ]", "[ 設定遮罩圖片 ]", "[ 關於AdBlock ]", "[ 關於... ]"};
 	private static final int REQUEST_PICK_BACKGROUND_PIC = 6;
 	private static final int REQUEST_PICK_MASK_PIC = 7;
@@ -66,16 +66,14 @@ public class SettingFragment extends Fragment {
 			@NonNull
 			@Override
 			public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
+				String currentItem = buttonItems[position];
 				View listItemView = convertView;
 				if (listItemView == null) {
 					listItemView = LayoutInflater.from(ma).inflate(R.layout.listitem_button, parent, false);
 				}
 
-				String currentItem = buttonItems[position];
-
 				TextView textView = listItemView.findViewById(R.id.textview);
 				textView.setText(currentItem);
-
 				textView.setOnClickListener(v -> {
 					switch (position) {
 						case 0:

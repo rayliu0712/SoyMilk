@@ -112,6 +112,11 @@ public class HomeFragment extends Fragment {
 				sauceItems[i] = ma.sauceConfig.get(i).name;
 			}
 
+			if (!ma.switchConfig.enableRecord) {
+				ma.historyFile.delete();
+				ma.historyConfig.clear();
+			}
+
 			if (ma.backgroundURI != null) {
 				ma.backgroundIV.setImageURI(ma.backgroundURI);
 				ma.getJPG(ma.backgroundIV.getDrawable(), ma.backgroundFile);

@@ -3,6 +3,7 @@
   "hideNavigationBar": true,
   "enableFlagSecure": true,
   "enableAdBlock": true,
+  "enableRecord": true,
   "enableMask": true,
   "useNumPad": true
 }

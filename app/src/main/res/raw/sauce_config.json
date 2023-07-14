@@ -1,22 +1,22 @@
 [
   {
     "name": "Google",
-    "url": "google.com/search?q="
+    "url": "www.google.com/search?q="
   },
   {
     "name": "YouTube1",
-    "url": "youtube.com/results?search_query="
+    "url": "www.youtube.com/results?search_query="
   },
   {
     "name": "YouTube2",
-    "url": "youtube.com/results?search_query="
+    "url": "www.youtube.com/results?search_query="
   },
   {
     "name": "YouTube3",
-    "url": "youtube.com/results?search_query="
+    "url": "www.youtube.com/results?search_query="
   },
   {
     "name": "YouTube4",
-    "url": "youtube.com/results?search_query="
+    "url": "www.youtube.com/results?search_query="
   }
 ]

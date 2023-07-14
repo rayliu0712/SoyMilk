@@ -47,9 +47,11 @@ public class MainActivity extends AppCompatActivity {
 
 	public final int VERSION_DND = M;
 	public final int VERSION_REQUEST_GETURL = LOLLIPOP;
+	public int HISTORY_ITEM_HEIGHT;
+	public int SCREEN_HEIGHT;
 
 	public int choosenSauce = 0;
-	public String number = "666";
+	public String number = null;
 	public String url = "777";
 	public boolean shouldIgnoreFocusChanged = false;
 	public int dndOrigin;
@@ -216,6 +218,10 @@ public class MainActivity extends AppCompatActivity {
 		}
 	}
 
+	private int dp2px(float dp) {
+		return (int) (dp * getResources().getDisplayMetrics().density + 0.5f);
+	}
+
 	public MainActivity() {
 		ma = this;
 	}
@@ -227,6 +233,8 @@ public class MainActivity extends AppCompatActivity {
 
 		// setter
 		{
+			HISTORY_ITEM_HEIGHT = dp2px(40);
+			SCREEN_HEIGHT = getResources().getDisplayMetrics().heightPixels;
 			nm = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
 			if (SDK_INT >= VERSION_DND) {
 				if (!nm.isNotificationPolicyAccessGranted()) {

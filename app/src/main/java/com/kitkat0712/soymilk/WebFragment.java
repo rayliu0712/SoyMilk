@@ -14,24 +14,22 @@ import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.ImageView;
-import android.widget.Toast;
 
 import androidx.fragment.app.Fragment;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-
 import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.ByteArrayInputStream;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
 
 public class WebFragment extends Fragment {
 	private StringBuilder blocklist;
 	private ImageView dndIV;
+	private boolean isFirstLoaded = true;
 
 	private void setDNDVisual() {
 		if (ma.isDNDOn()) {
@@ -39,6 +37,36 @@ public class WebFragment extends Fragment {
 		} else {
 			dndIV.clearColorFilter();
 		}
+	}
+
+	private String trimProtocol(String url) {
+		return url.replaceAll("^(https?://)", "");
+	}
+
+	private void writeHistory(String url) {
+		if (!ma.switchConfig.enableRecord) return;
+
+		String date = new SimpleDateFormat("yyyy/MM/dd").format(new Date());
+		url = trimProtocol(url);
+
+		try {
+			if (date.equals(ma.historyConfig.get(0).date)) {
+				ma.historyConfig.get(0).url.add(0, url);
+			} else {
+				throw new IndexOutOfBoundsException();
+			}
+		} catch (IndexOutOfBoundsException e) {
+			ArrayList<String> arrayList = new ArrayList<>();
+			arrayList.add(url);
+
+			HistoryConfig historyConfig = new HistoryConfig();
+			historyConfig.date = date;
+			historyConfig.url = arrayList;
+
+			ma.historyConfig.add(0, historyConfig);
+		}
+
+		ma.writeListConfig(ma.historyFile, ma.historyConfig);
 	}
 
 	@Override
@@ -87,10 +115,12 @@ public class WebFragment extends Fragment {
 
 			wv.setWebViewClient(new WebViewClient() {
 				@Override
-				public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
-					String url = request.getUrl().toString();
-					Toast.makeText(ma, url, Toast.LENGTH_SHORT).show();
-					return false;
+				public void onPageFinished(WebView view, String url) {
+					if (ma.url.equals(trimProtocol(view.getUrl())) && !isFirstLoaded) return;
+
+					isFirstLoaded = false;
+					ma.url = trimProtocol(view.getUrl());
+					writeHistory(ma.url);
 				}
 
 				@Override
@@ -108,16 +138,10 @@ public class WebFragment extends Fragment {
 		} else {
 			wv.setWebViewClient(new WebViewClient());
 		}
-		String testUrl = String.format("https://www.%s", ma.url);
-		wv.loadUrl(testUrl);
-		Toast.makeText(ma, testUrl, Toast.LENGTH_SHORT).show();
-
+		wv.loadUrl(String.format("https://%s", ma.url));
 
 		view.findViewById(R.id.close).setOnClickListener(v -> {
-			HistoryConfig hc = new HistoryConfig();
-			hc.date = "6969";
-			hc.url = "666777888999";
-			ma.writeListConfig(ma.historyFile, ma.historyConfig);
+			// write
 			ma.replaceFragment(new HomeFragment());
 		});
 		view.findViewById(R.id.previous).setOnClickListener(v -> {

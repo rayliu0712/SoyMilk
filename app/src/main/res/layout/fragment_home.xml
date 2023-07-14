@@ -113,7 +113,7 @@
                     <EditText
                         android:id="@+id/url"
                         android:layout_width="match_parent"
-                        android:layout_height="35dp"
+                        android:layout_height="70dp"
                         android:layout_marginStart="10dp"
                         android:background="@null"
                         android:hint="@string/empty"
