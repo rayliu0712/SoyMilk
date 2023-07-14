@@ -5,4 +5,5 @@
     <string name="library_fragment">Library</string>
     <string name="setting">[ Setting ]</string>
     <string name="empty">EMPTY</string>
+    <string name="url">URL</string>
 </resources>

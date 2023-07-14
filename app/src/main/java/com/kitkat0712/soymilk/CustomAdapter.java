@@ -44,7 +44,7 @@ public class CustomAdapter extends BaseAdapter {
 		}
 
 		TextView tv = convertView.findViewById(R.id.textview);
-		tv.setTextSize(TypedValue.COMPLEX_UNIT_SP, isUrl.get(i) ? 20 : 25);
+		tv.setTextSize(TypedValue.COMPLEX_UNIT_SP, isUrl.get(i) ? 16 : 25);
 		tv.setText(getItem(i));
 
 		convertView.setOnClickListener(v -> {

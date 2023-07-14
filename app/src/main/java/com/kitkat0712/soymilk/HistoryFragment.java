@@ -17,19 +17,19 @@ import android.widget.TextView;
 import java.util.ArrayList;
 
 public class HistoryFragment extends Fragment {
-	@Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-		View view = inflater.inflate(R.layout.fragment_history, container, false);
-		ListView lv = (ListView) view.findViewById(R.id.listview);
-		lv.setAdapter(new CustomAdapter(ma.historyConfig));
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.fragment_history, container, false);
+        ListView lv = view.findViewById(R.id.listview);
+        lv.setAdapter(new CustomAdapter(ma.historyConfig));
 
-		view.findViewById(R.id.back).setOnClickListener(v -> ma.replaceFragment(new HomeFragment()));
-		view.findViewById(R.id.clear).setOnClickListener(v -> {
-			ma.historyFile.delete();
-			ma.historyConfig.clear();
-			lv.setAdapter(new CustomAdapter(ma.historyConfig));
-		});
+        view.findViewById(R.id.back).setOnClickListener(v -> ma.replaceFragment(new HomeFragment()));
+        view.findViewById(R.id.clear).setOnClickListener(v -> {
+            ma.historyFile.delete();
+            ma.historyConfig.clear();
+            lv.setAdapter(new CustomAdapter(ma.historyConfig));
+        });
 
-		return view;
-	}
+        return view;
+    }
 }
