@@ -51,6 +51,15 @@
             android:scaleType="center"
             android:src="@drawable/close" />
 
+        <ImageView
+            android:id="@+id/info"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:scaleType="center"
+            android:src="@drawable/info" />
+
+
     </LinearLayout>
 
 

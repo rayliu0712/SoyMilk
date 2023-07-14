@@ -28,7 +28,6 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 public class HomeFragment extends Fragment {
-    private String[] sauceItems;
     private InputMethodManager imm;
     private EditText numberET;
     private ImageView dndIV;
@@ -121,6 +120,7 @@ public class HomeFragment extends Fragment {
             public void afterTextChanged(Editable editable) {
                 if (isOnCreateView) return;
 
+                ma.number = editable.toString();
                 syncUrl();
                 checkBookmark();
             }
@@ -134,11 +134,6 @@ public class HomeFragment extends Fragment {
         // setter
         {
             ma.staticLayout();
-
-            sauceItems = new String[ma.sauceConfig.size()];
-            for (int i = 0; i < ma.sauceConfig.size(); ++i) {
-                sauceItems[i] = ma.sauceConfig.get(i).name;
-            }
 
             if (!ma.switchConfig.enableRecord) {
                 ma.historyFile.delete();
@@ -203,20 +198,25 @@ public class HomeFragment extends Fragment {
         });
 
         ListView lv = view.findViewById(R.id.listview);
-        lv.setAdapter(new ArrayAdapter<String>(ma, R.layout.listitem_sauce, sauceItems) {
+        lv.setAdapter(new ArrayAdapter<SauceConfig>(ma, R.layout.listitem_sauce, ma.sauceConfig) {
+            @Nullable
+            @Override
+            public SauceConfig getItem(int position) {
+                return ma.sauceConfig.get(position);
+            }
+
             @NonNull
             @Override
             public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
-                View listItemView = convertView;
-                String currentItem = sauceItems[position];
-                if (listItemView == null) {
-                    listItemView = LayoutInflater.from(ma).inflate(R.layout.listitem_sauce, parent, false);
+                SauceConfig currentItem = getItem(position);
+                if (convertView == null) {
+                    convertView = LayoutInflater.from(ma).inflate(R.layout.listitem_sauce, parent, false);
                 }
 
-                Button button = listItemView.findViewById(R.id.button);
-                button.setText(ma.choosenSauce == position ? String.format("[ %s ]", currentItem) : currentItem);
+                Button button = convertView.findViewById(R.id.button);
+                button.setText(ma.choosenSauce == position ? String.format("[ %s ]", currentItem.name) : currentItem.name);
                 button.setOnClickListener(v -> {
-                    button.setText(String.format("[ %s ]", currentItem));
+                    button.setText(String.format("[ %s ]", currentItem.name));
                     if (ma.choosenSauce != position) {
                         Button previousBtn = lv.getChildAt(ma.choosenSauce).findViewById(R.id.button);
                         previousBtn.setText(previousBtn.getText().toString().replace("[ ", "").replace(" ]", ""));
@@ -226,18 +226,29 @@ public class HomeFragment extends Fragment {
                     checkBookmark();
                 });
                 button.setOnLongClickListener(v -> {
+                    ma.shouldIgnoreFocusChanged = true;
+                    View dialogView = View.inflate(ma, R.layout.dialog_sauce, null);
+                    EditText nameET = dialogView.findViewById(R.id.name);
+                    EditText urlET = dialogView.findViewById(R.id.url);
+                    nameET.setText(ma.sauceConfig.get(position).name);
+                    urlET.setText(ma.sauceConfig.get(position).url);
+
                     new AlertDialog.Builder(ma)
                             .setCancelable(false)
-                            .setView(View.inflate(ma, R.layout.dialog_sauce, null))
+                            .setView(dialogView)
+                            .setTitle("Edit Sauce")
                             .setPositiveButton("OK", (dialogInterface, i) -> {
-
+                                currentItem.name = nameET.getText().toString();
+                                currentItem.url = urlET.getText().toString();
+                                ma.writeListConfig(ma.sauceFile, ma.sauceConfig);
+                                notifyDataSetChanged();
                             })
                             .setNegativeButton("Cancel", null)
                             .show();
                     return true;
                 });
 
-                return listItemView;
+                return convertView;
             }
         });
         view.findViewById(R.id.setting).setOnClickListener(v -> ma.replaceFragment(new SettingFragment()));
@@ -245,7 +256,9 @@ public class HomeFragment extends Fragment {
             Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://" + ma.url));
             startActivity(intent);
         });
-        view.findViewById(R.id.go_webview).setOnClickListener(v -> ma.replaceFragment(new WebFragment()));
+        view.findViewById(R.id.go_webview).setOnClickListener(v -> {
+            ma.replaceFragment(new WebFragment());
+        });
 
         isOnCreateView = false;
         return view;

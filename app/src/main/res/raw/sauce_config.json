@@ -1,22 +1,14 @@
 [
   {
-    "name": "Google",
-    "url": "www.google.com/search?q="
+    "name": "nhentai",
+    "url": "www.nhentai.net/g/"
   },
   {
-    "name": "YouTube1",
-    "url": "www.youtube.com/results?search_query="
+    "name": "Pixiv",
+    "url": "www.pixiv.net/artworks/"
   },
   {
-    "name": "YouTube2",
-    "url": "www.youtube.com/results?search_query="
-  },
-  {
-    "name": "YouTube3",
-    "url": "www.youtube.com/results?search_query="
-  },
-  {
-    "name": "YouTube4",
-    "url": "www.youtube.com/results?search_query="
+    "name": "hanime",
+    "url": "hanime1.me/watch?v="
   }
 ]

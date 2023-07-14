@@ -13,6 +13,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Switch;
 import android.widget.TextView;
@@ -108,7 +109,21 @@ public class SettingFragment extends Fragment {
                                     .create().show();
                             break;
                         case 2:
+                            ma.shouldIgnoreFocusChanged = true;
+                            View dialogView = View.inflate(ma, R.layout.dialog_sauce, null);
+                            EditText nameET = dialogView.findViewById(R.id.name);
+                            EditText urlET = dialogView.findViewById(R.id.url);
 
+                            new AlertDialog.Builder(ma)
+                                    .setCancelable(false)
+                                    .setView(dialogView)
+                                    .setTitle("New Sauce")
+                                    .setPositiveButton("OK", (dialogInterface, i) -> {
+                                        ma.sauceConfig.add(0, new SauceConfig(nameET.getText().toString(), urlET.getText().toString()));
+                                        ma.writeListConfig(ma.sauceFile, ma.sauceConfig);
+                                    })
+                                    .setNegativeButton("Cancel", null)
+                                    .show();
                             break;
                         case 3:
                             ma.shouldIgnoreFocusChanged = true;
