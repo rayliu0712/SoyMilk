@@ -33,7 +33,7 @@ import java.util.Date;
 
 public class WebFragment extends Fragment {
 	private StringBuilder blocklist;
-	private WebView wv;
+	public WebView wv;
 	private ImageView dndIV;
 
 	private void setDNDVisual() {

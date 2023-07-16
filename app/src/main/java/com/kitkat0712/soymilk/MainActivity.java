@@ -19,6 +19,7 @@ import android.provider.Settings;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.webkit.WebView;
 import android.widget.ImageView;
 import android.widget.Toast;
 
@@ -107,7 +108,7 @@ public class MainActivity extends AppCompatActivity {
 	}
 
 	public void replaceFragment(Fragment fragment) {
-		ma.getSupportFragmentManager()
+		getSupportFragmentManager()
 				.beginTransaction()
 				.replace(R.id.fragment_container, fragment)
 				.commit();
@@ -303,6 +304,11 @@ public class MainActivity extends AppCompatActivity {
 
 	@Override
 	public void onBackPressed() {
-		// do something
+		if (WebFragment.class.getName().equals(getSupportFragmentManager().findFragmentById(R.id.fragment_container).getClass().getName())) {
+			((WebFragment)getSupportFragmentManager().findFragmentById(R.id.fragment_container)).wv.goBack();
+		}
+		else {
+			replaceFragment(new HomeFragment());
+		}
 	}
 }
