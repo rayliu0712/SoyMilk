@@ -48,7 +48,7 @@
             android:layout_marginTop="20dp"
             android:layout_marginEnd="20dp"
             android:divider="@null"
-            android:dividerHeight="40dp" />
+            android:dividerHeight="0dp" />
 
     </LinearLayout>
 

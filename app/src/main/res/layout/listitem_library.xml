@@ -8,12 +8,14 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentStart="true"
+        android:fontFamily="@font/notosanstc_thin"
         android:textSize="20sp" />
 
     <TextView
         android:id="@+id/number"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:fontFamily="@font/notosanstc_thin"
         android:layout_alignParentEnd="true"
         android:textSize="20sp" />
 

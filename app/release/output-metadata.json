@@ -11,9 +11,9 @@
       "type": "SINGLE",
       "filters": [],
       "attributes": [],
-      "versionCode": 1,
-      "versionName": "Beta 0.9",
-      "outputFile": "SoyMilk_Beta_0.9.apk"
+      "versionCode": 2,
+      "versionName": "v1.0.0",
+      "outputFile": "SoyMilk_v1.0.apk"
     }
   ],
   "elementType": "File"

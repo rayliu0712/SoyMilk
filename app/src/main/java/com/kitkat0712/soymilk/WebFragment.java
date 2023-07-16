@@ -1,9 +1,12 @@
 package com.kitkat0712.soymilk;
 
+import static android.os.Build.VERSION.SDK_INT;
+import static android.os.Build.VERSION_CODES.LOLLIPOP;
+import static android.os.Build.VERSION_CODES.M;
 import static com.kitkat0712.soymilk.MainActivity.ma;
 
 import android.app.AlertDialog;
-import android.graphics.Bitmap;
+import android.content.pm.ActivityInfo;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -29,152 +32,185 @@ import java.util.ArrayList;
 import java.util.Date;
 
 public class WebFragment extends Fragment {
-    private StringBuilder blocklist;
-    private ImageView dndIV;
-    private String buffUrl;
+	private StringBuilder blocklist;
+	private WebView wv;
+	private ImageView dndIV;
 
-    private void setDNDVisual() {
-        if (ma.isDNDOn()) {
-            dndIV.setColorFilter(Color.RED);
-        } else {
-            dndIV.clearColorFilter();
-        }
-    }
+	private void setDNDVisual() {
+		if (ma.isDNDOn()) {
+			dndIV.setColorFilter(Color.RED);
+		} else {
+			dndIV.clearColorFilter();
+		}
+	}
 
-    private String trimProtocol(String url) {
-        return url.replaceAll("^(https?://)", "");
-    }
+	private String trimProtocol(String url) {
+		return url.replaceAll("^(https?://)", "");
+	}
 
-    private void writeHistory(String url) {
-        if (!ma.switchConfig.enableRecord) return;
+	private String completeUrl(String url) {
+		return String.format("https://%s", url);
+	}
 
-        String date = new SimpleDateFormat("yyyy/MM/dd").format(new Date());
-        url = trimProtocol(url);
+	private void writeHistory(String url) {
+		if (!ma.switchConfig.enableRecord) return;
 
-        try {
-            if (date.equals(ma.historyConfig.get(0).date)) {
-                ma.historyConfig.get(0).url.add(0, url);
-            } else {
-                throw new IndexOutOfBoundsException();
-            }
-        } catch (IndexOutOfBoundsException e) {
-            ArrayList<String> arrayList = new ArrayList<>();
-            arrayList.add(url);
+		String date = new SimpleDateFormat("yyyy/MM/dd").format(new Date());
+		url = trimProtocol(url);
 
-            HistoryConfig historyConfig = new HistoryConfig();
-            historyConfig.date = date;
-            historyConfig.url = arrayList;
+		try {
+			if (date.equals(ma.historyConfig.get(0).date)) {
+				ma.historyConfig.get(0).url.add(0, url);
+			} else {
+				throw new IndexOutOfBoundsException();
+			}
+		} catch (IndexOutOfBoundsException e) {
+			ArrayList<String> arrayList = new ArrayList<>();
+			arrayList.add(url);
 
-            ma.historyConfig.add(0, historyConfig);
-        }
+			HistoryConfig historyConfig = new HistoryConfig();
+			historyConfig.date = date;
+			historyConfig.url = arrayList;
 
-        ma.writeListConfig(ma.historyFile, ma.historyConfig);
-    }
+			ma.historyConfig.add(0, historyConfig);
+		}
 
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_web, container, false);
-        WebView wv = view.findViewById(R.id.webview);
-        WebSettings webSettings = wv.getSettings();
+		ma.writeListConfig(ma.historyFile, ma.historyConfig);
+	}
 
-        dndIV = view.findViewById(R.id.dnd);
-        dndIV.setOnClickListener(v -> {
-            if (ma.dndOnClick()) {
-                setDNDVisual();
-            }
-        });
+	private void fuckWebViewClient() {
+		wv.post(() -> {
+			if (wv.getProgress() == 100) {
+				try {
+					if (!ma.historyConfig.get(0).url.get(0).equals(trimProtocol(wv.getUrl()))) {
+						throw new IndexOutOfBoundsException();
+					}
+				} catch (IndexOutOfBoundsException e) {
+					writeHistory(trimProtocol(wv.getUrl()));
+				}
+			}
+		});
+	}
 
-        wv.clearHistory();
-        webSettings.setCacheMode(WebSettings.LOAD_DEFAULT);
-        webSettings.setLoadsImagesAutomatically(true);
-        webSettings.setDomStorageEnabled(true);
-        webSettings.setSaveFormData(false);
+	@Override
+	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+		View view = inflater.inflate(R.layout.fragment_web, container, false);
+		ma.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
+		wv = view.findViewById(R.id.webview);
+		WebSettings webSettings = wv.getSettings();
 
-        webSettings.setJavaScriptEnabled(true);
-        webSettings.setSupportZoom(true);
-        webSettings.setBuiltInZoomControls(true);
-        webSettings.setDisplayZoomControls(false);
-        webSettings.setLoadWithOverviewMode(true);
-        webSettings.setUseWideViewPort(true);
-        if (ma.switchConfig.enableAdBlock) {
-            // load simplehttpserver.txt
-            {
-                String strLine2;
-                blocklist = new StringBuilder();
+		dndIV = view.findViewById(R.id.dnd);
+		if (SDK_INT >= M) {
+			dndIV.setOnClickListener(v -> {
+				if (ma.dndOnClick()) {
+					setDNDVisual();
+				}
+			});
+		} else {
+			dndIV.setEnabled(false);
+		}
 
-                InputStream fis2 = this.getResources().openRawResource(R.raw.adblockserverlist);//Storage location
-                BufferedReader br2 = new BufferedReader(new InputStreamReader(fis2));
-                if (fis2 != null) {
-                    try {
-                        while ((strLine2 = br2.readLine()) != null) {
-                            blocklist.append(strLine2);//if ":::::" exists in blocklist | Line for Line
-                            blocklist.append("\n");
-                        }
-                    } catch (IOException ignored) {
-                    }
-                }
-            }
+		wv.clearHistory();
+		webSettings.setCacheMode(WebSettings.LOAD_NO_CACHE);
+		webSettings.setLoadsImagesAutomatically(true);
+		webSettings.setDomStorageEnabled(true);
+		webSettings.setSaveFormData(false);
 
-            wv.setWebViewClient(new WebViewClient() {
-                @Override
-                public void onPageStarted(WebView view, String url, Bitmap favicon) {
-                    if (ma.url.equals(trimProtocol(view.getUrl()))) return;
+		webSettings.setJavaScriptEnabled(true);
+		webSettings.setSupportZoom(true);
+		webSettings.setBuiltInZoomControls(true);
+		webSettings.setDisplayZoomControls(false);
+		webSettings.setLoadWithOverviewMode(true);
+		webSettings.setUseWideViewPort(true);
 
-                    buffUrl = trimProtocol(view.getUrl());
-                    writeHistory(buffUrl);
-                }
+		// load simplehttpserver.txt
+		{
+			String strLine2;
+			blocklist = new StringBuilder();
 
-                @Override
-                public WebResourceResponse shouldInterceptRequest(WebView view, WebResourceRequest request) {
-                    ByteArrayInputStream EMPTY3 = new ByteArrayInputStream("".getBytes());
-                    String kk53 = String.valueOf(blocklist);//Load blocklist
-                    if (ma.isLateEnough(ma.VERSION_REQUEST_GETURL)) {
-                        if (kk53.contains(":::::" + request.getUrl().getHost())) {// If blocklist equals url = Block
-                            return new WebResourceResponse("text/plain", "utf-8", EMPTY3);//Block
-                        }
-                    }
-                    return super.shouldInterceptRequest(view, request);
-                }
-            });
-        } else {
-            wv.setWebViewClient(new WebViewClient());
-        }
-        wv.loadUrl(String.format("https://%s", ma.url));
+			InputStream fis2 = this.getResources().openRawResource(R.raw.adblockserverlist);//Storage location
+			BufferedReader br2 = new BufferedReader(new InputStreamReader(fis2));
+			if (fis2 != null) {
+				try {
+					while ((strLine2 = br2.readLine()) != null) {
+						blocklist.append(strLine2);//if ":::::" exists in blocklist | Line for Line
+						blocklist.append("\n");
+					}
+				} catch (IOException ignored) {
+				}
+			}
+		}
 
-        view.findViewById(R.id.close).setOnClickListener(v -> {
-            // write
-            ma.replaceFragment(new HomeFragment());
-        });
-        view.findViewById(R.id.previous).setOnClickListener(v -> {
-            if (wv.canGoBack()) {
-                wv.goBack();
-            }
-        });
-        view.findViewById(R.id.refresh).setOnClickListener(v -> {
-            v.setRotation(v.getRotation() + 90);
-            wv.reload();
-        });
-        view.findViewById(R.id.info).setOnClickListener(v -> {
-            EditText et = new EditText(ma);
-            et.setText(buffUrl);
-            ma.shouldIgnoreFocusChanged = true;
-            new AlertDialog.Builder(ma)
-                    .setView(et)
-                    .setCancelable(false)
-                    .setTitle("Navigation")
-                    .setPositiveButton("OK", (dialogInterface, i) -> {
-                        wv.loadUrl(String.format("https://%s", et.getText().toString()));
-                    })
-                    .setNegativeButton("Cancel", null)
-                    .show();
-        });
+		wv.loadUrl(completeUrl(ma.url));
+		wv.setWebViewClient(new WebViewClient() {
+			@Override
+			public void onReceivedError(WebView view, int errorCode, String description, String failingUrl) {
+				ma.shouldIgnoreFocusChanged = true;
+				new AlertDialog.Builder(ma)
+						.setCancelable(false)
+						.setTitle("Loading Error")
+						.setMessage(description)
+						.setPositiveButton("OK", null)
+						.show();
+			}
 
-        return view;
-    }
+			@Override
+			public WebResourceResponse shouldInterceptRequest(WebView view, WebResourceRequest request) {
+				fuckWebViewClient();
 
-    @Override
-    public void onResume() {
-        super.onResume();
-        setDNDVisual();
-    }
+				if (!ma.switchConfig.enableAdBlock)
+					return super.shouldInterceptRequest(view, request);
+
+				ByteArrayInputStream EMPTY3 = new ByteArrayInputStream("".getBytes());
+				String kk53 = String.valueOf(blocklist);//Load blocklist
+				if (SDK_INT >= LOLLIPOP) {
+					if (kk53.contains(":::::" + request.getUrl().getHost())) {// If blocklist equals url = Block
+						return new WebResourceResponse("text/plain", "utf-8", EMPTY3);//Block
+					}
+				}
+				return super.shouldInterceptRequest(view, request);
+			}
+		});
+
+		view.findViewById(R.id.close).setOnClickListener(v -> ma.replaceFragment(new HomeFragment()));
+		view.findViewById(R.id.previous).setOnClickListener(v -> {
+			if (wv.canGoBack()) {
+				wv.goBack();
+			}
+		});
+		view.findViewById(R.id.refresh).setOnClickListener(v -> {
+			v.setRotation(v.getRotation() + 90);
+			wv.reload();
+		});
+		view.findViewById(R.id.info).setOnClickListener(v -> {
+			ma.shouldIgnoreFocusChanged = true;
+			View dialogView = View.inflate(ma, R.layout.dialog_navigation, null);
+			EditText navigationUrlET = dialogView.findViewById(R.id.url);
+			navigationUrlET.setText(wv.getUrl());
+			new AlertDialog.Builder(ma)
+					.setView(dialogView)
+					.setCancelable(false)
+					.setTitle("Navigation")
+					.setPositiveButton("OK", (dialogInterface, i) -> {
+						wv.clearCache(true);
+						wv.loadUrl(navigationUrlET.getText().toString());
+					})
+					.setNegativeButton("Cancel", null)
+					.show();
+		});
+
+		return view;
+	}
+
+	@Override
+	public void onResume() {
+		super.onResume();
+		setDNDVisual();
+	}
+
+	@Override
+	public void onPause() {
+		super.onPause();
+		ma.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+	}
 }

@@ -6,6 +6,6 @@
     <string name="setting">[ Setting ]</string>
     <string name="empty">EMPTY</string>
     <string name="url">URL</string>
-    <string name="hint">[ HINT ]\n長按主頁面の平行四邊形按鈕即可編輯醬汁\n\n網址範例 www.nhentai.net/g/\n1. 去除數字部分\n2. 去除 https:// http:// 留住 www (如果有的話)</string>
+    <string name="hint">[ HINT ]\n長按主頁面の平行四邊形按鈕即可編輯醬汁\n\n網址範例 nhentai.net/g/\n1. 去除數字部分\n2. 去除 https:// 或是 http://</string>
     <string name="name">Name</string>
 </resources>
