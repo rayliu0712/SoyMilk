@@ -304,10 +304,12 @@ public class MainActivity extends AppCompatActivity {
 
 	@Override
 	public void onBackPressed() {
-		if (WebFragment.class.getName().equals(getSupportFragmentManager().findFragmentById(R.id.fragment_container).getClass().getName())) {
-			((WebFragment)getSupportFragmentManager().findFragmentById(R.id.fragment_container)).wv.goBack();
-		}
-		else {
+		Fragment current = getSupportFragmentManager().findFragmentById(R.id.fragment_container);
+		if (WebFragment.class.equals(current.getClass())) {
+			((WebFragment) current).wv.goBack();
+		} else if (SettingFragment.class.equals(current.getClass())) {
+			Toast.makeText(this, "hold the save button to discard the changes", Toast.LENGTH_LONG).show();
+		} else {
 			replaceFragment(new HomeFragment());
 		}
 	}

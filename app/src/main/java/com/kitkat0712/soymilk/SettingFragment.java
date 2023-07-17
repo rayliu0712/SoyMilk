@@ -63,6 +63,8 @@ public class SettingFragment extends Fragment {
 						theSwitch.setChecked(false);
 						theSwitch.setEnabled(false);
 					}
+				} else {
+					theSwitch.setChecked(buffArray[position]);
 				}
 
 				textView.setText(currentItem);
